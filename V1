@@ -1,0 +1,322 @@
+import React, { useState } from 'react';
+
+const SubwayRandomizer = () => {
+  // State for the randomly selected station
+  const [randomStation, setRandomStation] = useState(null);
+  // State for animation
+  const [isAnimating, setIsAnimating] = useState(false);
+  // State for subway lines filter
+  const [selectedLines, setSelectedLines] = useState([]);
+  // State for borough selection
+  const [selectedBoroughs, setSelectedBoroughs] = useState(['Manhattan']);
+  // All available subway lines in NYC
+  const subwayLines = ['1', '2', '3', '4', '5', '6', '7', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'J', 'L', 'M', 'N', 'Q', 'R', 'W', 'Z', 'S'];
+  // All NYC boroughs with subway service
+  const boroughs = ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'];
+
+  // NYC subway stations with their lines and borough
+  const allStations = [
+    // Manhattan
+    { name: "14th St-Union Sq", lines: ['4', '5', '6', 'N', 'Q', 'R', 'W', 'L'], borough: "Manhattan" },
+    { name: "42nd St-Times Square", lines: ['1', '2', '3', '7', 'N', 'Q', 'R', 'W', 'S'], borough: "Manhattan" },
+    { name: "Grand Central-42nd St", lines: ['4', '5', '6', '7', 'S'], borough: "Manhattan" },
+    { name: "34th St-Herald Sq", lines: ['B', 'D', 'F', 'M', 'N', 'Q', 'R', 'W'], borough: "Manhattan" },
+    { name: "Fulton Street", lines: ['2', '3', '4', '5', 'A', 'C', 'J', 'Z'], borough: "Manhattan" },
+    { name: "Canal St", lines: ['1', '6', 'A', 'C', 'E', 'N', 'Q', 'R', 'W', 'J', 'Z'], borough: "Manhattan" },
+    { name: "Columbus Circle", lines: ['1', 'A', 'B', 'C', 'D'], borough: "Manhattan" },
+    { name: "West 4th St", lines: ['A', 'B', 'C', 'D', 'E', 'F', 'M'], borough: "Manhattan" },
+    { name: "Chambers St", lines: ['1', '2', '3', 'A', 'C', 'E', 'J', 'Z'], borough: "Manhattan" },
+    { name: "Penn Station", lines: ['1', '2', '3', 'A', 'C', 'E'], borough: "Manhattan" },
+    { name: "Lexington Ave-63rd St", lines: ['F', 'Q'], borough: "Manhattan" },
+    { name: "Lexington Ave-59th St", lines: ['4', '5', '6', 'N', 'R', 'W'], borough: "Manhattan" },
+    { name: "72nd St", lines: ['1', '2', '3', 'B', 'C'], borough: "Manhattan" },
+    { name: "103rd St", lines: ['1', '6', 'B', 'C'], borough: "Manhattan" },
+    { name: "125th St", lines: ['1', '2', '3', '4', '5', '6', 'A', 'B', 'C', 'D'], borough: "Manhattan" },
+    { name: "Wall St", lines: ['2', '3', '4', '5'], borough: "Manhattan" },
+    { name: "Bleecker St", lines: ['6', 'B', 'D', 'F', 'M'], borough: "Manhattan" },
+    { name: "Spring St", lines: ['6', 'C', 'E'], borough: "Manhattan" },
+    { name: "Houston St", lines: ['1', 'F'], borough: "Manhattan" },
+    { name: "23rd St", lines: ['1', '6', 'F', 'M', 'N', 'R', 'W'], borough: "Manhattan" },
+    { name: "28th St", lines: ['1', '6', 'N', 'R', 'W'], borough: "Manhattan" },
+    { name: "Bryant Park", lines: ['7', 'B', 'D', 'F', 'M'], borough: "Manhattan" },
+    { name: "50th St", lines: ['1', 'C', 'E'], borough: "Manhattan" },
+    { name: "57th St", lines: ['F', 'N', 'Q', 'R', 'W'], borough: "Manhattan" },
+    { name: "66th St-Lincoln Center", lines: ['1'], borough: "Manhattan" },
+    { name: "79th St", lines: ['1', 'B', 'C'], borough: "Manhattan" },
+    { name: "86th St", lines: ['1', '4', '5', '6', 'B', 'C'], borough: "Manhattan" },
+    { name: "96th St", lines: ['1', '2', '3', '6', 'B', 'C'], borough: "Manhattan" },
+    { name: "116th St", lines: ['1', '2', '3', '6', 'B', 'C'], borough: "Manhattan" },
+    { name: "137th St", lines: ['1'], borough: "Manhattan" },
+    { name: "168th St", lines: ['1', 'A', 'C'], borough: "Manhattan" },
+    { name: "Bowling Green", lines: ['4', '5'], borough: "Manhattan" },
+    { name: "Brooklyn Bridge-City Hall", lines: ['4', '5', '6', 'J', 'Z'], borough: "Manhattan" },
+    { name: "Astor Place", lines: ['6'], borough: "Manhattan" },
+    { name: "51st St", lines: ['6', 'E', 'M'], borough: "Manhattan" },
+    { name: "68th St-Hunter College", lines: ['6'], borough: "Manhattan" },
+    { name: "77th St", lines: ['6'], borough: "Manhattan" },
+    { name: "110th St", lines: ['6'], borough: "Manhattan" },
+    { name: "116th St-Columbia University", lines: ['1'], borough: "Manhattan" },
+    { name: "135th St", lines: ['2', '3', 'B', 'C'], borough: "Manhattan" },
+    { name: "145th St", lines: ['1', '3', 'A', 'B', 'C', 'D'], borough: "Manhattan" },
+    { name: "157th St", lines: ['1'], borough: "Manhattan" },
+    { name: "Cortlandt St", lines: ['1', 'R', 'W'], borough: "Manhattan" },
+    { name: "Rector St", lines: ['1', 'R', 'W'], borough: "Manhattan" },
+    { name: "City Hall", lines: ['R', 'W'], borough: "Manhattan" },
+    { name: "Prince St", lines: ['N', 'R', 'W'], borough: "Manhattan" },
+    
+    // Brooklyn
+    { name: "Atlantic Ave-Barclays Center", lines: ['2', '3', '4', '5', 'B', 'D', 'N', 'Q', 'R'], borough: "Brooklyn" },
+    { name: "Jay St-MetroTech", lines: ['A', 'C', 'F', 'R'], borough: "Brooklyn" },
+    { name: "DeKalb Ave", lines: ['B', 'D', 'N', 'Q', 'R'], borough: "Brooklyn" },
+    { name: "Court St", lines: ['R'], borough: "Brooklyn" },
+    { name: "Borough Hall", lines: ['2', '3', '4', '5', 'R'], borough: "Brooklyn" },
+    { name: "Nevins St", lines: ['2', '3', '4', '5'], borough: "Brooklyn" },
+    { name: "Grand Army Plaza", lines: ['2', '3'], borough: "Brooklyn" },
+    { name: "Eastern Parkway-Brooklyn Museum", lines: ['2', '3'], borough: "Brooklyn" },
+    { name: "Franklin Ave", lines: ['2', '3', '4', '5', 'S'], borough: "Brooklyn" },
+    { name: "Prospect Park", lines: ['B', 'Q', 'S'], borough: "Brooklyn" },
+    { name: "Church Ave", lines: ['B', 'Q', 'F', 'G'], borough: "Brooklyn" },
+    { name: "Bedford Ave", lines: ['L'], borough: "Brooklyn" },
+    { name: "Lorimer St", lines: ['L', 'G'], borough: "Brooklyn" },
+    { name: "Graham Ave", lines: ['L'], borough: "Brooklyn" },
+    { name: "Montrose Ave", lines: ['L'], borough: "Brooklyn" },
+    { name: "Coney Island-Stillwell Ave", lines: ['D', 'F', 'N', 'Q'], borough: "Brooklyn" },
+    { name: "Bay Parkway", lines: ['D', 'N'], borough: "Brooklyn" },
+    { name: "Kings Highway", lines: ['B', 'Q', 'N'], borough: "Brooklyn" },
+    { name: "Broadway Junction", lines: ['A', 'C', 'J', 'L', 'Z'], borough: "Brooklyn" },
+    { name: "Canarsie-Rockaway Parkway", lines: ['L'], borough: "Brooklyn" },
+    
+    // Queens
+    { name: "Jackson Heights-Roosevelt Ave", lines: ['E', 'F', 'M', 'R', '7'], borough: "Queens" },
+    { name: "Queensboro Plaza", lines: ['N', 'W', '7'], borough: "Queens" },
+    { name: "Queens Plaza", lines: ['E', 'M', 'R'], borough: "Queens" },
+    { name: "Court Square", lines: ['E', 'M', 'G', '7'], borough: "Queens" },
+    { name: "Forest Hills-71st Ave", lines: ['E', 'F', 'M', 'R'], borough: "Queens" },
+    { name: "Kew Gardens-Union Turnpike", lines: ['E', 'F'], borough: "Queens" },
+    { name: "Jamaica Center-Parsons/Archer", lines: ['E', 'J', 'Z'], borough: "Queens" },
+    { name: "Jamaica-179th St", lines: ['F'], borough: "Queens" },
+    { name: "Flushing-Main St", lines: ['7'], borough: "Queens" },
+    { name: "61st St-Woodside", lines: ['7'], borough: "Queens" },
+    { name: "Junction Blvd", lines: ['7'], borough: "Queens" },
+    { name: "74th St-Broadway", lines: ['7'], borough: "Queens" },
+    { name: "Astoria Blvd", lines: ['N', 'W'], borough: "Queens" },
+    { name: "Far Rockaway-Mott Ave", lines: ['A'], borough: "Queens" },
+    { name: "Howard Beach-JFK Airport", lines: ['A'], borough: "Queens" },
+    { name: "Aqueduct-North Conduit Ave", lines: ['A'], borough: "Queens" },
+    { name: "Rockaway Blvd", lines: ['A'], borough: "Queens" },
+    { name: "111th St", lines: ['A', '7'], borough: "Queens" },
+    { name: "Ozone Park-Lefferts Blvd", lines: ['A'], borough: "Queens" },
+    
+    // Bronx
+    { name: "Yankee Stadium-161st St", lines: ['4', 'B', 'D'], borough: "Bronx" },
+    { name: "149th St-Grand Concourse", lines: ['2', '4', '5'], borough: "Bronx" },
+    { name: "3rd Ave-149th St", lines: ['2', '5'], borough: "Bronx" },
+    { name: "Hunts Point Ave", lines: ['6'], borough: "Bronx" },
+    { name: "Mosholu Parkway", lines: ['4'], borough: "Bronx" },
+    { name: "Fordham Rd", lines: ['4', 'B', 'D'], borough: "Bronx" },
+    { name: "Kingsbridge Rd", lines: ['4', 'B', 'D'], borough: "Bronx" },
+    { name: "Bedford Park Blvd", lines: ['4', 'B', 'D'], borough: "Bronx" },
+    { name: "Pelham Parkway", lines: ['2', '5'], borough: "Bronx" },
+    { name: "Gun Hill Rd", lines: ['2', '5'], borough: "Bronx" },
+    { name: "Pelham Bay Park", lines: ['6'], borough: "Bronx" },
+    { name: "Westchester Square-East Tremont Ave", lines: ['6'], borough: "Bronx" },
+    { name: "East 180th St", lines: ['2', '5'], borough: "Bronx" },
+    { name: "Morris Park", lines: ['5'], borough: "Bronx" },
+    { name: "Wakefield-241st St", lines: ['2'], borough: "Bronx" },
+    { name: "Nereid Ave", lines: ['2', '5'], borough: "Bronx" },
+    { name: "233rd St", lines: ['2', '5'], borough: "Bronx" },
+    { name: "225th St", lines: ['2', '5'], borough: "Bronx" },
+    { name: "219th St", lines: ['2', '5'], borough: "Bronx" },
+    
+    // Staten Island
+    { name: "St. George", lines: ['SIR'], borough: "Staten Island" },
+    { name: "Tompkinsville", lines: ['SIR'], borough: "Staten Island" },
+    { name: "Stapleton", lines: ['SIR'], borough: "Staten Island" },
+    { name: "Clifton", lines: ['SIR'], borough: "Staten Island" },
+    { name: "Grasmere", lines: ['SIR'], borough: "Staten Island" },
+    { name: "Old Town", lines: ['SIR'], borough: "Staten Island" },
+    { name: "Dongan Hills", lines: ['SIR'], borough: "Staten Island" },
+    { name: "Jefferson Ave", lines: ['SIR'], borough: "Staten Island" },
+    { name: "Grant City", lines: ['SIR'], borough: "Staten Island" },
+    { name: "New Dorp", lines: ['SIR'], borough: "Staten Island" }
+  ];
+
+  // Function to toggle subway line selection
+  const toggleLineSelection = (line) => {
+    if (selectedLines.includes(line)) {
+      setSelectedLines(selectedLines.filter(l => l !== line));
+    } else {
+      setSelectedLines([...selectedLines, line]);
+    }
+  };
+  
+  // Function to toggle borough selection
+  const toggleBoroughSelection = (borough) => {
+    if (selectedBoroughs.includes(borough)) {
+      // Don't allow deselecting the last borough
+      if (selectedBoroughs.length > 1) {
+        setSelectedBoroughs(selectedBoroughs.filter(b => b !== borough));
+      }
+    } else {
+      setSelectedBoroughs([...selectedBoroughs, borough]);
+    }
+  };
+
+  // Function to get filtered stations based on selected lines and boroughs
+  const getFilteredStations = () => {
+    // First filter by borough
+    let filteredByBorough = allStations.filter(station => 
+      selectedBoroughs.includes(station.borough)
+    );
+    
+    // Then filter by line if any lines are selected
+    if (selectedLines.length === 0) {
+      return filteredByBorough;
+    }
+    
+    return filteredByBorough.filter(station => 
+      station.lines.some(line => selectedLines.includes(line))
+    );
+  };
+
+  // Function to randomly select a station
+  const selectRandomStation = () => {
+    setIsAnimating(true);
+    
+    const filteredStations = getFilteredStations();
+    
+    if (filteredStations.length === 0) {
+      setRandomStation({ name: "No stations match your filter", lines: [] });
+      setTimeout(() => setIsAnimating(false), 2000);
+      return;
+    }
+    
+    // Animation effect with multiple stations before landing on final one
+    let count = 0;
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * filteredStations.length);
+      setRandomStation(filteredStations[randomIndex]);
+      count++;
+      
+      if (count > 10) {
+        clearInterval(interval);
+        setIsAnimating(false);
+      }
+    }, 150);
+  };
+
+  // Get line color based on subway line
+  const getLineColor = (line) => {
+    const colors = {
+      '1': '#EE352E', '2': '#EE352E', '3': '#EE352E',
+      '4': '#00933C', '5': '#00933C', '6': '#00933C',
+      '7': '#B933AD',
+      'A': '#0039A6', 'C': '#0039A6', 'E': '#0039A6',
+      'B': '#FF6319', 'D': '#FF6319', 'F': '#FF6319', 'M': '#FF6319',
+      'N': '#FCCC0A', 'Q': '#FCCC0A', 'R': '#FCCC0A', 'W': '#FCCC0A',
+      'J': '#996633', 'Z': '#996633',
+      'L': '#A7A9AC',
+      'S': '#808183',
+      'G': '#6CBE45'
+    };
+    
+    return colors[line] || '#888888';
+  };
+
+  // Line indicator component
+  const LineIndicator = ({ line, selected, onClick }) => (
+    <div 
+      className={`h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-sm cursor-pointer ${selected ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`} 
+      style={{ backgroundColor: getLineColor(line) }}
+      onClick={onClick}
+    >
+      {line}
+    </div>
+  );
+
+  return (
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <h1 className="text-2xl font-bold text-center mb-6">NYC Subway Stop Randomizer</h1>
+      
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">Choose Boroughs:</h2>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {boroughs.map(borough => (
+            <button
+              key={borough}
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                selectedBoroughs.includes(borough)
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+              onClick={() => toggleBoroughSelection(borough)}
+            >
+              {borough}
+            </button>
+          ))}
+        </div>
+        
+        <h2 className="text-lg font-semibold mb-2">Filter by Subway Lines:</h2>
+        <div className="flex flex-wrap gap-2">
+          {subwayLines.map(line => (
+            <LineIndicator 
+              key={line} 
+              line={line} 
+              selected={selectedLines.includes(line)} 
+              onClick={() => toggleLineSelection(line)} 
+            />
+          ))}
+        </div>
+        
+        <div className="mt-2 flex justify-between">
+          {selectedLines.length > 0 && (
+            <button 
+              className="text-sm text-blue-600 hover:underline"
+              onClick={() => setSelectedLines([])}
+            >
+              Clear Line Filters
+            </button>
+          )}
+          {(selectedBoroughs.length > 1 || selectedBoroughs[0] !== 'Manhattan') && (
+            <button 
+              className="text-sm text-blue-600 hover:underline"
+              onClick={() => setSelectedBoroughs(['Manhattan'])}
+            >
+              Reset to Manhattan
+            </button>
+          )}
+        </div>
+      </div>
+      
+      <button 
+        className="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors mb-6"
+        onClick={selectRandomStation}
+        disabled={isAnimating}
+      >
+        {isAnimating ? "Selecting..." : "Get Random Station"}
+      </button>
+      
+      {randomStation && (
+        <div className={`p-4 border-2 rounded-lg ${isAnimating ? 'animate-pulse' : 'border-blue-500'}`}>
+          <h2 className="text-xl font-bold text-center mb-2">{randomStation.name}</h2>
+          <p className="text-center text-gray-600 mb-2">{randomStation.borough}</p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {randomStation.lines.map(line => (
+              <div 
+                key={line} 
+                className="h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                style={{ backgroundColor: getLineColor(line) }}
+              >
+                {line}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      <div className="mt-6 text-xs text-gray-500">
+        <p>Note: This is a simplified list of NYC subway stations. Some stations may be missing or have inaccurate line information.</p>
+      </div>
+    </div>
+  );
+};
